@@ -18,6 +18,7 @@ limitations under the License.
 package api
 
 import (
+	"context"
 	"fmt"
 	"net/url"
 	"strings"
@@ -32,6 +33,7 @@ import (
 	"github.com/apache/incubator-devlake/core/models/domainlayer/ticket"
 	"github.com/apache/incubator-devlake/core/plugin"
 	"github.com/apache/incubator-devlake/core/utils"
+	"github.com/apache/incubator-devlake/helpers/pluginhelper/api"
 	helper "github.com/apache/incubator-devlake/helpers/pluginhelper/api"
 	"github.com/apache/incubator-devlake/plugins/github/models"
 	"github.com/apache/incubator-devlake/plugins/github/tasks"
@@ -128,7 +130,24 @@ func makeDataSourcePipelinePlanV200(
 			if err != nil {
 				return nil, err
 			}
-			token := strings.Split(connection.Token, ",")[0]
+
+			var token string
+			if connection.AuthMethod == "githubapp" {
+				apiClient, err := api.NewApiClientFromConnection(context.TODO(), basicRes, connection)
+				if err != nil {
+					return nil, err
+				}
+
+				newConnection, err := connection.UseAppInstallationTokenForRepo(op.Name, apiClient)
+				if err != nil {
+					return nil, err
+				}
+
+				token = strings.Split(newConnection.Token, ",")[0]
+			} else {
+				token = strings.Split(connection.Token, ",")[0]
+			}
+
 			cloneUrl.User = url.UserPassword("git", token)
 			stage = append(stage, &plugin.PipelineTask{
 				Plugin: "gitextractor",

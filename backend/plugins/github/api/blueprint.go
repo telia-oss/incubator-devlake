@@ -31,6 +31,7 @@ import (
 	"github.com/apache/incubator-devlake/core/models/domainlayer/didgen"
 	"github.com/apache/incubator-devlake/core/plugin"
 	"github.com/apache/incubator-devlake/core/utils"
+	"github.com/apache/incubator-devlake/helpers/pluginhelper/api"
 	helper "github.com/apache/incubator-devlake/helpers/pluginhelper/api"
 	aha "github.com/apache/incubator-devlake/helpers/pluginhelper/api/apihelperabstract"
 	"github.com/apache/incubator-devlake/plugins/github/models"
@@ -167,7 +168,24 @@ func addGitex(entities []string,
 ) (plugin.PipelineStage, errors.Error) {
 	if utils.StringsContains(entities, plugin.DOMAIN_TYPE_CODE) {
 		// here is the tricky part, we have to obtain the repo id beforehand
-		token := strings.Split(connection.Token, ",")[0]
+
+		var token string
+		if connection.AuthMethod == "githubapp" {
+			apiClient, err := api.NewApiClientFromConnection(context.TODO(), basicRes, connection)
+			if err != nil {
+				return nil, err
+			}
+
+			newConnection, err := connection.UseAppInstallationTokenForRepo(repo.Name, apiClient)
+			if err != nil {
+				return nil, err
+			}
+
+			token = strings.Split(newConnection.Token, ",")[0]
+		} else {
+			token = strings.Split(connection.Token, ",")[0]
+		}
+
 		cloneUrl, err := errors.Convert01(url.Parse(repo.CloneUrl))
 		if err != nil {
 			return nil, err

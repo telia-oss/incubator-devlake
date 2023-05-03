@@ -19,8 +19,9 @@ package impl
 
 import (
 	"fmt"
-	"github.com/apache/incubator-devlake/core/models/domainlayer/devops"
 	"time"
+
+	"github.com/apache/incubator-devlake/core/models/domainlayer/devops"
 
 	"github.com/apache/incubator-devlake/core/context"
 	"github.com/apache/incubator-devlake/core/dal"
@@ -157,6 +158,19 @@ func (p Github) PrepareTaskData(taskCtx plugin.TaskContext, options map[string]i
 	if err != nil {
 		return nil, errors.Default.Wrap(err, "unable to get github connection by the given connection ID")
 	}
+
+	if connection.AuthMethod == "githubapp" {
+		apiClient, err := tasks.CreateApiClient(taskCtx, connection)
+		if err != nil {
+			return nil, err
+		}
+
+		connection, err = connection.UseAppInstallationTokenForRepo(op.Name, apiClient)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	apiClient, err := tasks.CreateApiClient(taskCtx, connection)
 	if err != nil {
 		return nil, errors.Default.Wrap(err, "unable to get github API client instance")
@@ -231,6 +245,9 @@ func (p Github) ApiResources() map[string]map[string]plugin.ApiResourceHandler {
 			"GET":   api.GetTransformationRule,
 		},
 		"connections/:connectionId/proxy/rest/*path": {
+			"GET": api.Proxy,
+		},
+		"connections/:connectionId/installations/:installationid/proxy/rest/*path": {
 			"GET": api.Proxy,
 		},
 	}
