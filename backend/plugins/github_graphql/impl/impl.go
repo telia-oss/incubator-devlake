@@ -145,7 +145,6 @@ func (p GithubGraphql) PrepareTaskData(taskCtx plugin.TaskContext, options map[s
 	}
 	connection.SetRepository(op.Name)
 
-
 	apiClient, err := githubTasks.CreateApiClient(taskCtx, connection)
 	if err != nil {
 		return nil, errors.Default.Wrap(err, "unable to get github API client instance")
@@ -169,7 +168,7 @@ func (p GithubGraphql) PrepareTaskData(taskCtx plugin.TaskContext, options map[s
 		}
 		if pu.Scheme == "http" || pu.Scheme == "socks5" {
 			proxyClient := http.Client{
-				Transport : &http.Transport{Proxy: http.ProxyURL(pu)},
+				Transport: &http.Transport{Proxy: http.ProxyURL(pu)},
 			}
 			oauthContext = context.WithValue(
 				taskCtx.GetContext(),
