@@ -145,6 +145,20 @@ func (p GithubGraphql) PrepareTaskData(taskCtx plugin.TaskContext, options map[s
 	}
 	connection.SetRepository(op.Name)
 
+	proxy := connection.GetProxy()
+	if proxy != "" {
+		pu, err := url.Parse(proxy)
+		if err != nil {
+			return nil, errors.Convert(err)
+		}
+		if pu.Scheme == "http" || pu.Scheme == "socks5" {
+			proxyClient := http.Client{
+				Transport : &http.Transport{Proxy: http.ProxyURL(pu)}
+			}
+			context.WithValue(taskCtx, oauth2.HTTPClient, proxyClient)
+		}
+	}
+
 	apiClient, err := githubTasks.CreateApiClient(taskCtx, connection)
 	if err != nil {
 		return nil, errors.Default.Wrap(err, "unable to get github API client instance")
@@ -159,26 +173,6 @@ func (p GithubGraphql) PrepareTaskData(taskCtx plugin.TaskContext, options map[s
 		&oauth2.Token{AccessToken: connection.GetToken()},
 	)
 	httpClient := oauth2.NewClient(taskCtx.GetContext(), src)
-	proxy := connection.GetProxy()
-	if proxy != "" {
-		pu, err := url.Parse(proxy)
-		if err != nil {
-			return nil, errors.Convert(err)
-		}
-		if pu.Scheme == "http" || pu.Scheme == "socks5" {
-			if oauthTransport, ok := httpClient.Transport.(*oauth2.Transport); ok {
-				if httpTransport, ok := oauthTransport.Base.(*http.Transport); ok {
-					httpTransport.Proxy = http.ProxyURL(pu)
-				} else {
-					return nil, errors.Default.New("unable to set proxy for oauth transport")
-				}
-			} else if httpTransport, ok := httpClient.Transport.(*http.Transport); ok {
-				httpTransport.Proxy = http.ProxyURL(pu)
-			} else {
-				return nil, errors.Default.New("unable to set proxy for http transport")
-			}
-		}
-	}
 
 	endpoint, err := errors.Convert01(url.JoinPath(connection.Endpoint, `graphql`))
 	if err != nil {
