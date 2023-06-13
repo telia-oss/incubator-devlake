@@ -145,19 +145,6 @@ func (p GithubGraphql) PrepareTaskData(taskCtx plugin.TaskContext, options map[s
 	}
 	connection.SetRepository(op.Name)
 
-	proxy := connection.GetProxy()
-	if proxy != "" {
-		pu, err := url.Parse(proxy)
-		if err != nil {
-			return nil, errors.Convert(err)
-		}
-		if pu.Scheme == "http" || pu.Scheme == "socks5" {
-			proxyClient := http.Client{
-				Transport : &http.Transport{Proxy: http.ProxyURL(pu)}
-			}
-			context.WithValue(taskCtx, oauth2.HTTPClient, proxyClient)
-		}
-	}
 
 	apiClient, err := githubTasks.CreateApiClient(taskCtx, connection)
 	if err != nil {
@@ -172,7 +159,27 @@ func (p GithubGraphql) PrepareTaskData(taskCtx plugin.TaskContext, options map[s
 	src := oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: connection.GetToken()},
 	)
-	httpClient := oauth2.NewClient(taskCtx.GetContext(), src)
+
+	oauthContext := taskCtx.GetContext()
+	proxy := connection.GetProxy()
+	if proxy != "" {
+		pu, err := url.Parse(proxy)
+		if err != nil {
+			return nil, errors.Convert(err)
+		}
+		if pu.Scheme == "http" || pu.Scheme == "socks5" {
+			proxyClient := http.Client{
+				Transport : &http.Transport{Proxy: http.ProxyURL(pu)}
+			}
+			oauthContext = context.WithValue(
+				taskCtx.GetContext(),
+				oauth2.HTTPClient,
+				proxyClient
+			)
+		}
+	}
+
+	httpClient := oauth2.NewClient(oauthContext, src)
 
 	endpoint, err := errors.Convert01(url.JoinPath(connection.Endpoint, `graphql`))
 	if err != nil {
