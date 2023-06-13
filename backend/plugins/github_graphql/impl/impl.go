@@ -169,12 +169,12 @@ func (p GithubGraphql) PrepareTaskData(taskCtx plugin.TaskContext, options map[s
 		}
 		if pu.Scheme == "http" || pu.Scheme == "socks5" {
 			proxyClient := http.Client{
-				Transport : &http.Transport{Proxy: http.ProxyURL(pu)}
+				Transport : &http.Transport{Proxy: http.ProxyURL(pu)},
 			}
 			oauthContext = context.WithValue(
 				taskCtx.GetContext(),
 				oauth2.HTTPClient,
-				proxyClient
+				proxyClient,
 			)
 		}
 	}
