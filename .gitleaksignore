@@ -1,0 +1,9 @@
+886f8b1420e7c6b375c607988e3cd3ef26ddeca9:backend/plugins/zentao/e2e/raw_tables/_raw_zentao_api_task_repo_commits.csv:generic-api-key:2
+886f8b1420e7c6b375c607988e3cd3ef26ddeca9:backend/plugins/zentao/e2e/raw_tables/_raw_zentao_api_bug_repo_commits.csv:generic-api-key:2
+886f8b1420e7c6b375c607988e3cd3ef26ddeca9:backend/plugins/zentao/e2e/raw_tables/_raw_zentao_api_story_repo_commits.csv:generic-api-key:2
+11036ff8379cfa6072005903135581b5a558ef95:backend/plugins/zentao/e2e/raw_tables/_raw_zentao_api_bug_repo_commits.csv:generic-api-key:2
+11036ff8379cfa6072005903135581b5a558ef95:backend/plugins/zentao/e2e/raw_tables/_raw_zentao_api_story_repo_commits.csv:generic-api-key:2
+11036ff8379cfa6072005903135581b5a558ef95:backend/plugins/zentao/e2e/raw_tables/_raw_zentao_api_task_repo_commits.csv:generic-api-key:2
+2debaa3295cad8da09e4b19691981f2cb36964b1:config-ui/src/data/TestBlueprintDetail.js:github-pat:129
+461386441d741a101a26bae6b23db3e867b358c6:config-ui/src/data/TestBlueprintDetail.js:github-pat:128
+7a4ac0eec917fa62348f841f1539ccee6ac1cf3c:config-ui/src/pages/blueprints/blueprint-detail.jsx:github-pat:222
