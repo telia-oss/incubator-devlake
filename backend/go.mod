@@ -3,7 +3,6 @@ module github.com/apache/incubator-devlake
 go 1.19
 
 require (
-	github.com/RaveNoX/go-jsonmerge v1.0.0
 	github.com/aws/aws-sdk-go v1.44.242
 	github.com/cockroachdb/errors v1.9.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
@@ -24,7 +23,7 @@ require (
 	github.com/mitchellh/mapstructure v1.4.1
 	github.com/panjf2000/ants/v2 v2.4.6
 	github.com/robfig/cron/v3 v3.0.0
-	github.com/sirupsen/logrus v1.8.1
+	github.com/sirupsen/logrus v1.8.3
 	github.com/spf13/afero v1.6.0
 	github.com/spf13/cast v1.4.1
 	github.com/spf13/cobra v1.5.0
@@ -47,9 +46,7 @@ require (
 	gorm.io/gorm v1.24.1-0.20221019064659-5dd2bb482755
 )
 
-require (
-	github.com/jmespath/go-jmespath v0.4.0 // indirect
-)
+require github.com/jmespath/go-jmespath v0.4.0 // indirect
 
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
